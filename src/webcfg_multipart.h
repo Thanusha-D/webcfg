@@ -36,8 +36,6 @@
 #define FORCED_FW_UPGRADE_REBOOT_REASON  "UPGRADE"
 #endif
 
-#define WEBCFG_FREE(__x__) if(__x__ != NULL) { free((void*)(__x__)); __x__ = NULL;} else {WebcfgDebug("Trying to free null pointer\n");}
-
 typedef struct multipartdocs
 {
     uint32_t  etag;
