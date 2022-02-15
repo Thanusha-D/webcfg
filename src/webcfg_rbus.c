@@ -1621,7 +1621,7 @@ int subscribeTo_CurrentActiveInterface_Event()
       rbusEventSubscription_t subscription = {WEBCFG_INTERFACE_PARAM, NULL, 0, 0, eventReceiveHandler, NULL, NULL, NULL};
       WebcfgInfo("Subscribing to Device.X_RDK_WanManager.CurrentActiveInterfaceEvent\n");
       rc = rbusEvent_Subscribe(
-        handle,
+        rbus_handle,
         "Device.X_RDK_WanManager.CurrentActiveInterface",
         eventReceiveHandler,
         "My User Data",
