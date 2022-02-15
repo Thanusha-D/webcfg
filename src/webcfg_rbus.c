@@ -1570,3 +1570,65 @@ void waitForUpstreamEventSubscribe(int wait_time)
 		}
 	}
 }
+
+#define PRINT_EVENT(EVENT, SUBSCRIPTION) \
+    WebcfgDebug("\n############################################################################\n" \
+        " Event received in handler: %s\n" \
+        " Subscription:\n" \
+        "   eventName=%s\n" \
+        "   userData=%s\n" \
+        " Event:\n" \
+        "   type=%d\n" \
+        "   name=%s\n" \
+        "   data=\n", \
+            __FUNCTION__, \
+            (SUBSCRIPTION)->eventName, \
+            (char*)(SUBSCRIPTION)->userData, \
+            (EVENT)->type, \
+            (EVENT)->name); \
+    rbusObject_fwrite((EVENT)->data, 8, stdout); \
+    printf("\n############################################################################\n");
+
+
+static void eventReceiveHandler(
+    rbusHandle_t handle,
+    rbusEvent_t const* event,
+    rbusEventSubscription_t* subscription)
+{
+    (void)handle;
+
+    rbusValue_t newValue = rbusObject_GetValue(event->data, "value");
+    rbusValue_t oldValue = rbusObject_GetValue(event->data, "oldValue");
+    WebcfgDebug("Consumer receiver ValueChange event for param %s\n", event->name);
+
+    if(newValue)
+        WebcfgDebug("   New Value: %d\n", rbusValue_GetInt32(newValue));
+
+    if(oldValue)
+        WebcfgDebug("   Old Value: %d\n", rbusValue_GetInt32(oldValue));
+
+    if(subscription->userData)
+        WebcfgDebug("   User data: %s\n", (char*)subscription->userData);
+
+    PRINT_EVENT(event, subscription);
+
+}
+
+
+int subscribeTo_CurrentActiveInterface_Event()
+{
+      int rc = RBUS_ERROR_SUCCESS;	
+      rbusEventSubscription_t subscription = {"Device.X_RDK_WanManager.CurrentActiveInterface", NULL, 0, 0, eventReceiveHandler, NULL, NULL, NULL};
+      WebcfgDebug("Subscribing to Device.X_RDK_WanManager.CurrentActiveInterfaceEvent\n");
+      rc = rbusEvent_Subscribe(
+        handle,
+        "Device.X_RDK_WanManager.CurrentActiveInterface",
+        eventReceiveHandler,
+        "My User Data",
+        0);
+      if(rc != RBUS_ERROR_SUCCESS) {
+	      WebcfgDebug("Device.X_RDK_WanManager.CurrentActiveInterface subscribe failed : %d\n", rc);
+       }
+
+       return rc;
+}

@@ -161,6 +161,7 @@ char* generate_trans_uuid();
 WEBCFG_STATUS processMsgpackSubdoc(char *transaction_id);
 void loadInitURLFromFile(char **url);
 static void get_webCfg_interface(char **interface);
+static char * getParamValue(char *paramName);
 
 #ifdef FEATURE_SUPPORT_AKER
 WEBCFG_STATUS checkAkerDoc();
@@ -305,7 +306,8 @@ WEBCFG_STATUS webcfg_http_request(char **configData, int r_count, int status, lo
 		WebcfgDebug("fetching interface from device.properties\n");
 		if(strlen(g_interface) == 0)
 		{
-			get_webCfg_interface(&interface);
+			//get_webCfg_interface(&interface);
+		        interface = getParamValue("Device.X_RDK_WanManager.CurrentActiveInterface");
 			if(interface !=NULL)
 		        {
 		               strncpy(g_interface, interface, sizeof(g_interface)-1);
@@ -1211,6 +1213,44 @@ static void get_webCfg_interface(char **interface)
         }
 #endif
 }
+
+char * getParamValue(char *paramName)
+{
+	if(isRbusEnabled())
+	{
+		int paramCount=0;
+		WDMP_STATUS ret = WDMP_FAILURE;
+		int count=0;
+		const char *getParamList[1];
+		getParamList[0] = paramName;
+
+		char *paramValue = (char *) malloc(sizeof(char)*64);
+		paramCount = sizeof(getParamList)/sizeof(getParamList[0]);
+		param_t **parametervalArr = (param_t **) malloc(sizeof(param_t *) * paramCount);
+
+		WebcfgDebug("paramName : %s paramCount %d\n",getParamList[0], paramCount);
+		getValues_rbus(getParamList, paramCount, 0, NULL, &parametervalArr, &count, &ret);
+
+		if (ret == WDMP_SUCCESS )
+		{
+			strncpy(paramValue, parametervalArr[0]->value,63);
+			WEBCFG_FREE(parametervalArr[0]->name);
+			WEBCFG_FREE(parametervalArr[0]->value);
+			WEBCFG_FREE(parametervalArr[0]);
+		}
+		else
+		{
+			WebcfgError("Failed to GetValue for %s\n", getParamList[0]);
+			WEBCFG_FREE(paramValue);
+		}
+		WEBCFG_FREE(parametervalArr);
+		WebcfgDebug("getParamValue : paramValue is %s\n", paramValue);
+		return paramValue;
+	}
+	WebcfgError("getParamValue : returns NULL\n");
+	return NULL;
+}
+
 
 void loadInitURLFromFile(char **url)
 {

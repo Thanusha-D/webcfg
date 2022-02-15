@@ -95,4 +95,5 @@ int get_rbus_ForceSync(char** pString, char **transactionId );
 bool get_rbus_RfcEnable();
 void sendNotification_rbus(char *payload, char *source, char *destination);
 void waitForUpstreamEventSubscribe(int wait_time);
+int subscribeTo_CurrentActiveInterface_Event();
 #endif
