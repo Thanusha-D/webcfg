@@ -138,7 +138,7 @@ char *get_global_systemReadyTime(void)
 
 char * getParamValue(char *paramName)
 {
-    WebcfgDebug("Inside getPramValue weak function.\n");
+    WebcfgInfo("Inside getPramValue weak function.\n");
     UNUSED(paramName);
     return NULL;
 }    
