@@ -1624,7 +1624,7 @@ static void eventReceiveHandler(
 int subscribeTo_CurrentActiveInterface_Event()
 {
       int rc = RBUS_ERROR_SUCCESS;	
-      rbusEventSubscription_t subscription = {WEBCFG_INTERFACE_PARAM, NULL, 0, 0, eventReceiveHandler, NULL, NULL, NULL};
+      //rbusEventSubscription_t subscription = {WEBCFG_INTERFACE_PARAM, NULL, 0, 0, eventReceiveHandler, NULL, NULL, NULL};
       WebcfgInfo("Subscribing to Device.X_RDK_WanManager.CurrentActiveInterfaceEvent\n");
       rc = rbusEvent_Subscribe(
         rbus_handle,
