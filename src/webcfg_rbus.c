@@ -1608,10 +1608,10 @@ static void eventReceiveHandler(
     WebcfgInfo("Consumer receiver ValueChange event for param %s\n", event->name);
 
     if(newValue)
-        WebcfgInfo("   New Value: %d\n", rbusValue_GetInt32(newValue));
+        WebcfgInfo("   New Value: %d\n", rbusValue_GetString(newValue, NULL));
 
     if(oldValue)
-        WebcfgInfo("   Old Value: %d\n", rbusValue_GetInt32(oldValue));
+        WebcfgInfo("   Old Value: %d\n", rbusValue_GetString(oldValue, NULL));
 
     if(subscription->userData)
         WebcfgInfo("   User data: %s\n", (char*)subscription->userData);
