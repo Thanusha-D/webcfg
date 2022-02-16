@@ -49,6 +49,7 @@ char * getFirmwareUpgradeStartTime();
 char * getFirmwareUpgradeEndTime();
 /* Getter function to return systemReadyTime in UTC format */
 char *get_global_systemReadyTime();
+char * getParamValue(char *paramName);
 
 /* Function that gets the values from TR181 dml layer */
 int setForceSync(char* pString, char *transactionId,int *session_status);

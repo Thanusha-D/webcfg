@@ -160,7 +160,7 @@ void addToDBList(webconfig_db_data_t *webcfgdb);
 char* generate_trans_uuid();
 WEBCFG_STATUS processMsgpackSubdoc(char *transaction_id);
 void loadInitURLFromFile(char **url);
-static void get_webCfg_interface(char **interface);
+//static void get_webCfg_interface(char **interface);
 
 #ifdef FEATURE_SUPPORT_AKER
 WEBCFG_STATUS checkAkerDoc();
@@ -1173,7 +1173,7 @@ void stripspaces(char *str, char **final_str)
 	*final_str = str;
 }
 
-static void get_webCfg_interface(char **interface)
+/*static void get_webCfg_interface(char **interface)
 {
 #if ! defined(DEVICE_EXTENDER)
         FILE *fp = fopen(DEVICE_PROPS_FILE, "r");
@@ -1211,7 +1211,7 @@ static void get_webCfg_interface(char **interface)
                 WebcfgDebug("interface fetched is %s\n", *interface);
         }
 #endif
-}
+}*/
 
 void loadInitURLFromFile(char **url)
 {

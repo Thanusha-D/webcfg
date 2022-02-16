@@ -44,6 +44,7 @@ char *__attribute__((weak)) getFirmwareVersion(void);
 char *__attribute__((weak)) get_deviceMAC(void);
 char *__attribute__((weak)) getFirmwareUpgradeStartTime(void);
 char *__attribute__((weak)) getFirmwareUpgradeEndTime(void);
+char *__attribute__((weak)) getParamValue(char *paramName);
 #endif
 char *__attribute__((weak)) get_global_systemReadyTime(void);
 int __attribute__((weak)) setForceSync(char* pString, char *transactionId,int *session_status);
@@ -134,6 +135,13 @@ char *get_global_systemReadyTime(void)
 {
     return NULL;
 }
+
+char * getParamValue(char *paramName)
+{
+    WebcfgDebug("Inside getPramValue weak function.\n");
+    UNUSED(paramName);
+    return NULL;
+}    
 
 int setForceSync(char* pString, char *transactionId,int *session_status)
 {

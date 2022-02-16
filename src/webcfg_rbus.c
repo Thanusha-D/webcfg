@@ -40,6 +40,12 @@ static char ForceSync[256]={'\0'};
 static char ForceSyncTransID[256]={'\0'};
 
 static int subscribed = 0;
+
+static void eventReceiveHandler(
+    rbusHandle_t rbus_handle,
+    rbusEvent_t const* event,
+    rbusEventSubscription_t* subscription);
+
 rbusDataElement_t eventDataElement[1] = {
 		{WEBCFG_EVENT_NAME, RBUS_ELEMENT_TYPE_PROPERTY, {NULL, rbusWebcfgEventHandler, NULL, NULL, NULL, NULL}}
 	};
