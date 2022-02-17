@@ -16,6 +16,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+//#include <cpeabs.h>
 #include "webcfg_multipart.h"
 #include "webcfg_param.h"
 #include "webcfg_log.h"
@@ -166,6 +167,7 @@ void loadInitURLFromFile(char **url);
 WEBCFG_STATUS checkAkerDoc();
 #endif
 
+
 /*----------------------------------------------------------------------------*/
 /*                             External Functions                             */
 /*----------------------------------------------------------------------------*/
@@ -304,13 +306,17 @@ WEBCFG_STATUS webcfg_http_request(char **configData, int r_count, int status, lo
 		res = curl_easy_setopt(curl, CURLOPT_TIMEOUT, CURL_TIMEOUT_SEC);
 		WebcfgDebug("fetching interface from device.properties\n");
 		if(strlen(g_interface) == 0)
-		{
+		{ 
+			WebcfgInfo("Fetch Interface value from rbus_get\n");
 			//get_webCfg_interface(&interface);
-		        interface = getParamValue(WEBCFG_INTERFACE_PARAM);
+		        interface = getInterfaceValue(WEBCFG_INTERFACE_PARAM);
+			WebcfgInfo("Interface value after getParamValue = %s", interface);
 			if(interface !=NULL)
 		        {
+			       WebcfgInfo("Interface not NULL Interface = %s\n", interface);
 		               strncpy(g_interface, interface, sizeof(g_interface)-1);
 		               WebcfgDebug("g_interface copied is %s\n", g_interface);
+			       WebcfgInfo("g_interface get from getParamValue %s\n", g_interface);
 		               WEBCFG_FREE(interface);
 		        }
 		}

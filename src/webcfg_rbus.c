@@ -1559,6 +1559,44 @@ void sendNotification_rbus(char *payload, char *source, char *destination)
 	}
 }
 
+char * getInterfaceValue(char *paramName)
+{
+        if(isRbusEnabled())
+        {
+                int paramCount=0;
+                int ret = WDMP_FAILURE;
+                int count=0;
+                const char *getParamList[1];
+                getParamList[0] = paramName;
+
+                char *paramValue = (char *) malloc(sizeof(char)*64);
+                paramCount = sizeof(getParamList)/sizeof(getParamList[0]);
+                param_t **parametervalArr = (param_t **) malloc(sizeof(param_t *) * paramCount);
+
+                WebcfgInfo("paramName : %s paramCount %d\n",getParamList[0], paramCount);
+                getValues_rbus(getParamList, paramCount, 0, NULL, &parametervalArr, &count, &ret);
+
+                if (ret == WDMP_SUCCESS )
+                {
+                        strncpy(paramValue, parametervalArr[0]->value,63);
+                        WEBCFG_FREE(parametervalArr[0]->name);
+                        WEBCFG_FREE(parametervalArr[0]->value);
+                        WEBCFG_FREE(parametervalArr[0]);
+                }
+                else
+                {
+                        WebcfgInfo("Failed to GetValue for %s\n", getParamList[0]);
+                        WEBCFG_FREE(paramValue);
+                }
+                WEBCFG_FREE(parametervalArr);
+                WebcfgInfo("getParamValue : paramValue is %s\n", paramValue);
+                return paramValue;
+        }
+        WebcfgInfo("getParamValue : returns NULL\n");
+        return NULL;
+}
+
+
 // wait for upstream subscriber
 void waitForUpstreamEventSubscribe(int wait_time)
 {
