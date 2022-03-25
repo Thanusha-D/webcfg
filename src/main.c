@@ -117,10 +117,10 @@ int main()
 	return 1;
 }
 
-const char *rdk_logger_module_fetch(void)
+/*const char *rdk_logger_module_fetch(void)
 {
     return "LOG.RDK.WEBCONFIG";
-}
+}*/
 
 /*----------------------------------------------------------------------------*/
 /*                             Internal functions                             */

@@ -19,19 +19,19 @@
 
 #define WebConfigLog(...)       __cimplog_rdk_generic(WEBCFG_RDK_LOGGING_MODULE, WEBCFG_LOGGING_MODULE, LEVEL_INFO, __VA_ARGS__)
 
-#ifdef WEBCONFIG_BIN_SUPPORT
+/*#ifdef WEBCONFIG_BIN_SUPPORT
 
 #define WebcfgError(...)	cimplog_error(WEBCFG_LOGGING_MODULE, __VA_ARGS__)
 #define WebcfgInfo(...)		cimplog_info(WEBCFG_LOGGING_MODULE, __VA_ARGS__)
 #define WebcfgDebug(...)	cimplog_debug(WEBCFG_LOGGING_MODULE, __VA_ARGS__)
 
-#else
+#else*/
 
 #define WebcfgError(...)	__cimplog_rdk_generic(WEBCFG_RDK_LOGGING_MODULE, WEBCFG_LOGGING_MODULE, LEVEL_ERROR, __VA_ARGS__)
 #define WebcfgInfo(...)		__cimplog_rdk_generic(WEBCFG_RDK_LOGGING_MODULE, WEBCFG_LOGGING_MODULE, LEVEL_INFO, __VA_ARGS__)
 #define WebcfgDebug(...)	__cimplog_rdk_generic(WEBCFG_RDK_LOGGING_MODULE, WEBCFG_LOGGING_MODULE, LEVEL_DEBUG, __VA_ARGS__)
 
-#endif
+//#endif
 
 #else
 #define WebConfigLog(...)       printf(__VA_ARGS__)
