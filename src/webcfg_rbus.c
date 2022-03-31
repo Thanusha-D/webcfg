@@ -1594,6 +1594,26 @@ void waitForUpstreamEventSubscribe(int wait_time)
 }
 
 #ifdef WAN_FAILOVER_SUPPORTED
+
+#define PRINT_EVENT(EVENT, SUBSCRIPTION) \
+    WebcfgInfo("\n############################################################################\n" \
+        " Event received in handler: %s\n" \
+        " Subscription:\n" \
+        "   eventName=%s\n" \
+        "   userData=%s\n" \
+        " Event:\n" \
+        "   type=%d\n" \
+        "   name=%s\n" \
+        "   data=\n", \
+            __FUNCTION__, \
+            (SUBSCRIPTION)->eventName, \
+            (char*)(SUBSCRIPTION)->userData, \
+            (EVENT)->type, \
+            (EVENT)->name); \
+    rbusObject_fwrite((EVENT)->data, 8, stdout); \
+    WebcfgInfo("\n############################################################################\n");
+
+
 static void eventReceiveHandler(
     rbusHandle_t rbus_handle,
     rbusEvent_t const* event,
@@ -1601,14 +1621,33 @@ static void eventReceiveHandler(
 {
     (void)rbus_handle;
     char * interface = NULL;
-    rbusValue_t newValue = rbusObject_GetValue(event->data, "value");
+    rbusValue_t newValue = rbusObject_GetValue(event->data, "Device.X_RDK_WanManager.CurrentActiveInterface");
     rbusValue_t oldValue = rbusObject_GetValue(event->data, "oldValue");
+    rbusValue_t value = rbusObject_GetValue(event->data, "value");
     WebcfgInfo("Consumer receiver ValueChange event for param %s\n", event->name);
-
+    PRINT_EVENT(event, subscription);
     if(newValue) {    
         interface = (char *) rbusValue_GetString(newValue, NULL);
 	set_global_interface(interface);
+	WebcfgInfo("NewValue after g_interface set %s, g_interface %s\n", rbusValue_GetString(newValue, NULL), get_global_interface()); 
     }	
+    else {
+	    WebcfgInfo("NewValue is null");
+    }
+    if(oldValue) {
+	    WebcfgInfo("OldValue = %s\n", rbusValue_GetString(oldValue, NULL));
+    }
+     else {
+            WebcfgInfo("OldValue is null");
+    }
+
+    if(value) {
+	     WebcfgInfo("Value = %s\n", rbusValue_GetString(value, NULL));
+    }
+    else {
+            WebcfgInfo("Value is null");
+    }
+
     if(newValue !=NULL && oldValue!=NULL && get_global_interface()!=NULL) {
             WebcfgInfo("New Value: %s Old Value: %s New Interface Value: %s\n", rbusValue_GetString(newValue, NULL), rbusValue_GetString(oldValue, NULL), get_global_interface());
     }    
