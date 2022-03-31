@@ -1650,7 +1650,10 @@ static void eventReceiveHandler(
 
     if(newValue !=NULL && oldValue!=NULL && get_global_interface()!=NULL) {
             WebcfgInfo("New Value: %s Old Value: %s New Interface Value: %s\n", rbusValue_GetString(newValue, NULL), rbusValue_GetString(oldValue, NULL), get_global_interface());
-    }    
+    }
+    else {
+	    WebcfgInfo(" All values are null\n");
+    }
 }
 
 static void subscribeAsyncHandler(
