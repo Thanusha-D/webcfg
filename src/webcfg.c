@@ -519,6 +519,7 @@ void processWebconfgSync(int status, char* docname)
 		WebcfgInfo("webcfg_http_request BACKOFF_SLEEP_DELAY_SEC is %d seconds\n", BACKOFF_SLEEP_DELAY_SEC);
 		sleep(BACKOFF_SLEEP_DELAY_SEC);
 		retry_count++;
+		r_count++;
 		if(retry_count <= 3)
 		{
 			WebcfgInfo("Webconfig curl retry_count to server is %d\n", retry_count);

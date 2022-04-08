@@ -333,7 +333,7 @@ WEBCFG_STATUS webcfg_http_request(char **configData, int r_count, int status, lo
 		}
 		WebcfgInfo("g_interface fetched is %s\n", g_interface);
 		if(strlen(g_interface) > 0)
-		{
+		{        
 			WebcfgDebug("setting interface %s\n", g_interface);
 			res = curl_easy_setopt(curl, CURLOPT_INTERFACE, g_interface);
 		}
