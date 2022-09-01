@@ -64,5 +64,6 @@ pthread_t get_global_event_threadid();
 pthread_t get_global_process_threadid();
 pthread_cond_t *get_global_event_con(void);
 pthread_mutex_t *get_global_event_mut(void);
+int checkTmpNACKstatus(webconfig_tmp_data_t *temp, char *docname);
 
 #endif

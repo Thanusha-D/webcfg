@@ -132,6 +132,12 @@ void webpaRbus_Uninit()
     rbus_close(rbus_handle);
 }
 
+rbusError_t getTraceContext(char *traceParent, char *traceState)
+{
+	rbusError_t ret = RBUS_ERROR_SUCCESS;
+	ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+	return ret;
+
 /**
  * Data set handler for parameters owned by Webconfig
  */
@@ -527,6 +533,17 @@ rbusError_t webcfgUrlGetHandler(rbusHandle_t handle, rbusProperty_t property, rb
 	rbusValue_t value;
         rbusValue_Init(&value);
 
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = getTraceContext(traceParent, traceState);
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgSupportedDocsGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgSupportedDocsGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }	
+
 	if(!isRfcEnabled())
 	{
 		WebcfgError("RfcEnable is disabled so, %s Get from DB failed\n",propertyName);
@@ -629,6 +646,17 @@ rbusError_t webcfgSupportedDocsGetHandler(rbusHandle_t handle, rbusProperty_t pr
         rbusValue_t value;
         rbusValue_Init(&value);
 
+	rbusError_t ret = RBUS_ERROR_SUCCESS;
+	char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+	ret = getTraceContext(traceParent, traceState);
+	if(ret != RBUS_ERROR_SUCCESS) {
+		WebcfgError("webcfgSupportedDocsGetHandler getTraceContext failed with errorcode - %d\n", ret);
+	}
+	else {
+	        WebcfgInfo("webcfgSupportedDocsGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+	}	
+
 	if(!isRfcEnabled())
 	{
 		WebcfgError("RfcEnable is disabled so, %s Get from DB failed\n",propertyName);
@@ -673,6 +701,17 @@ rbusError_t webcfgSupportedVersionGetHandler(rbusHandle_t handle, rbusProperty_t
     {
         rbusValue_t value;
         rbusValue_Init(&value);
+
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = getTraceContext(traceParent, traceState);
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgSupportedDocsSetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgSupportedDocsSetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }
 
 	if(!isRfcEnabled())
 	{

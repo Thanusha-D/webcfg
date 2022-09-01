@@ -390,6 +390,13 @@ void* processSubdocEvents()
 					{
 						addWebConfgNotifyMsg(eventParam->subdoc_name, docVersion, "pending", "timer_expired", subdoc_node->cloud_trans_id, eventParam->timeout, "status", 0, NULL, 200);
 					}
+					//To avoid NACK blob re-apply on EXPIRE event after 304
+					if(checkTmpNACKstatus(subdoc_node, eventParam->subdoc_name))
+					{
+						WebcfgInfo("Skip retry for %s as blob apply status is NACK\n", eventParam->subdoc_name);
+					}
+					else
+					{
 					WebcfgDebug("retryMultipartSubdoc for EXPIRE case\n");
 					rs = retryMultipartSubdoc(subdoc_node, eventParam->subdoc_name);
 					if(rs == WEBCFG_SUCCESS)
@@ -413,6 +420,7 @@ void* processSubdocEvents()
 								WEBCFG_FREE(errmsg);
 							}
 						}
+					}
 					}
 				}
 				else if (eventParam->timeout != 0)
@@ -468,6 +476,13 @@ void* processSubdocEvents()
 						}
 						else if(tmpVersion != eventParam->version)
 						{
+							//To avoid NACK blob re-apply on CRASH event after 304
+							if(checkTmpNACKstatus(subdoc_node, eventParam->subdoc_name))
+							{
+								WebcfgInfo("Skip retry for %s as blob apply status is NACK\n", eventParam->subdoc_name);
+							}
+							else
+							{
 							WebcfgInfo("tmp list has new version %lu for doc %s, retry\n", (long)tmpVersion, eventParam->subdoc_name);
 							rs = retryMultipartSubdoc(subdoc_node, eventParam->subdoc_name);
 							if(rs == WEBCFG_SUCCESS)
@@ -491,6 +506,7 @@ void* processSubdocEvents()
 										WEBCFG_FREE(errmsg);
 									}
 								}
+							}
 							}
 						}
 						else
@@ -522,6 +538,13 @@ void* processSubdocEvents()
 						//tmpVersion=0 indicate already doc is applied & deleted frm tmp list
 						if((tmpVersion !=0) && (tmpVersion != eventParam->version))
 						{
+							//To avoid NACK blob re-apply on CRASH event after 304
+							if(checkTmpNACKstatus(subdoc_node, eventParam->subdoc_name))
+							{
+								WebcfgInfo("Skip retry for %s as blob apply status is NACK\n", eventParam->subdoc_name);
+							}
+							else
+							{
 							WebcfgInfo("tmp list has new version %lu for doc %s, retry\n", (long)tmpVersion, eventParam->subdoc_name);
 							//retry with latest tmp version
 							rs = retryMultipartSubdoc(subdoc_node, eventParam->subdoc_name);
@@ -547,6 +570,7 @@ void* processSubdocEvents()
 										WEBCFG_FREE(errmsg);
 									}
 								}
+							}
 							}
 						}
 						else
@@ -1344,3 +1368,20 @@ void handleConnectedClientNotify(char *status)
 	return;
 }
 
+int checkTmpNACKstatus(webconfig_tmp_data_t *temp, char *docname)
+{
+	if (NULL != temp)
+	{
+		WebcfgDebug("checkTmpNACKstatus: temp->name %s, temp->error_details %s\n",temp->name, temp->error_details);
+		if( strcmp(docname, temp->name) == 0)
+		{
+			if(strncmp(temp->error_details, "NACK", 4) ==0)
+			{
+				WebcfgInfo("Tmp list error_details is NACK for subdoc %s\n", docname);
+				return 1;
+			}
+		}
+	}
+	WebcfgDebug("Tmp list is empty or error_details is not NACK\n");
+	return 0;
+}
