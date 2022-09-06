@@ -40,7 +40,7 @@
 #define buffLen 1024
 #define maxParamLen 128
 
-#define NUM_WEBCFG_ELEMENTS 9
+#define NUM_WEBCFG_ELEMENTS 10
 
 #define WEBCFG_COMPONENT_NAME "webconfig"
 #define MAX_PARAMETERNAME_LEN			4096
@@ -63,6 +63,7 @@
 #define PARAM_RFC_ENABLE "eRT.com.cisco.spvtg.ccsp.webpa.WebConfigRfcEnable"
 
 #define WEBCFG_UTIL_METHOD "Device.X_RDK_WebConfig.FetchCachedBlob"
+#define WEBCFG_SUBDOC_VERSION_METHOD "Device.X_RDK_WebConfig.AppliedSubdocVersion"
 
 #define CCSP_Msg_Bus_OK             100
 #define CCSP_Msg_Bus_OOM            101
@@ -116,6 +117,7 @@ void sendNotification_rbus(char *payload, char *source, char *destination);
 void waitForUpstreamEventSubscribe(int wait_time);
 
 webcfgError_t fetchMpBlobData(char *docname, void **blobdata, int *len, uint32_t *etag);
+webcfgError_t fetchAppliedSubdocVersion(char *docname, uint32_t *etag);
 #ifdef WAN_FAILOVER_SUPPORTED
 int subscribeTo_CurrentActiveInterface_Event();
 #endif

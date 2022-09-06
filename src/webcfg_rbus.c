@@ -984,6 +984,147 @@ rbusError_t fetchCachedBlobHandler(rbusHandle_t handle, char const* methodName, 
 	return RBUS_ERROR_BUS_ERROR;
 }
 
+void setAppliedSubdocVersionErrCode(rbusObject_t outParams, webcfgError_t errorCode)
+{
+	if(outParams != NULL)
+	{
+		rbusValue_t value;
+
+		char * errorString = webcfgError_ToString(errorCode);
+
+		WebcfgError("error_code : %d, error_string: %s\n", errorCode, errorString);
+
+		rbusValue_Init(&value);
+		rbusValue_SetUInt8(value, errorCode);
+		rbusObject_SetValue(outParams, "error_code", value);
+		rbusValue_Release(value);
+
+		rbusValue_Init(&value);
+		rbusValue_SetString(value, errorString);
+		rbusObject_SetValue(outParams, "error_string" ,value);
+		rbusValue_Release(value);
+
+		if(errorString != NULL)
+		{
+			free(errorString);
+		}
+	}
+
+}
+
+/**
+ *Used to fetch the applied subdoc version from DB
+ */
+webcfgError_t fetchAppliedSubdocVersion(char *docname, uint32_t *etag)
+{
+	webconfig_db_data_t *temp = NULL;
+	temp = get_global_db_node();
+
+	if(temp == NULL)
+	{
+		WebcfgError("Webcfg DB is NULL");
+		return ERROR_FAILURE;
+	}
+
+	while(temp != NULL)
+        {
+		if(strcmp(temp->name, docname) == 0)
+	        {
+			*etag = temp->version;
+			return ERROR_SUCCESS;
+		}	
+		temp = temp->next;
+	}
+	WebcfgError("Subdoc not found\n");
+	return ERROR_ELEMENT_DOES_NOT_EXIST;
+}	
+
+ 
+/**
+ *Method handler to fetch the webcfg cache
+ */
+rbusError_t appliedSubdocVersionHandler(rbusHandle_t handle, char const* methodName, rbusObject_t inParams, rbusObject_t outParams, rbusMethodAsyncHandle_t asyncHandle)
+{
+	(void) handle;
+	(void) outParams;
+	(void) asyncHandle;
+	WebcfgInfo("methodHandler called: %s\n", methodName);
+
+	if((methodName !=NULL) && (strcmp(methodName, WEBCFG_SUBDOC_VERSION_METHOD) == 0))
+	{
+		rbusProperty_t tempProp;
+		rbusValue_t propValue;
+		char * valueString = NULL;
+		uint32_t etag = 0;
+		int len = 0;
+		webcfgError_t ret = ERROR_FAILURE;
+
+		if(!isRfcEnabled())
+		{
+			WebcfgError("RfcEnable is disabled so, %s to fetch subdoc version from db failed\n",methodName);
+			setAppliedSubdocVersionErrCode(outParams, ERROR_FAILURE);
+			return RBUS_ERROR_BUS_ERROR;
+		}
+
+		tempProp = rbusObject_GetProperties(inParams);
+		propValue = rbusProperty_GetValue(tempProp);
+
+		valueString = (char *)rbusValue_GetString(propValue, &len);
+
+		if(valueString == NULL)
+		{
+			WebcfgError("Subdoc value is NULL\n");
+			setAppliedSubdocVersionErrCode(outParams, ERROR_INVALID_INPUT);
+			return RBUS_ERROR_BUS_ERROR;
+		}
+
+		if((valueString != NULL) && (strlen(valueString) == 0))
+		{
+			WebcfgError("Subdoc value is empty\n");
+			setAppliedSubdocVersionErrCode(outParams, ERROR_INVALID_INPUT);
+			return RBUS_ERROR_BUS_ERROR;
+		}
+
+		ret = fetchAppliedSubdocVersion(valueString, &etag);
+
+		if(ret == ERROR_SUCCESS)
+		{
+                        rbusValue_t value;
+
+			rbusValue_Init(&value);
+			rbusValue_SetString(value, valueString);
+			rbusObject_SetValue(outParams, "name", value);
+			rbusValue_Release(value);
+                        WebcfgDebug("The subdoc name is : %s\n", valueString);
+
+			rbusValue_Init(&value);
+			rbusValue_SetUInt32(value, etag);
+			rbusObject_SetValue(outParams, "etag", value);
+			rbusValue_Release(value);
+			WebcfgDebug("The version is : %lu\n", (long)etag);
+
+			WebcfgInfo("%s returns RBUS_ERROR_SUCCESS\n", methodName);
+			return RBUS_ERROR_SUCCESS;
+		}
+		else if(ret == ERROR_ELEMENT_DOES_NOT_EXIST)
+		{
+			WebcfgError("Mentioned %s subdoc is not found\n", valueString);
+			setAppliedSubdocVersionErrCode(outParams, ERROR_ELEMENT_DOES_NOT_EXIST);
+			return RBUS_ERROR_BUS_ERROR;
+		}
+		else if(ret == ERROR_FAILURE)
+		{
+			WebcfgError("Webcfg db is NULL\n");
+			setAppliedSubdocVersionErrCode(outParams, ERROR_FAILURE);
+			return RBUS_ERROR_BUS_ERROR;
+		}
+	}
+
+	WebcfgError("Method %s received is not supported\n", methodName);
+	setAppliedSubdocVersionErrCode(outParams, ERROR_FAILURE);
+	return RBUS_ERROR_BUS_ERROR;
+}	
+
 /**
  * Register data elements for dataModel implementation using rbus.
  * Data element over bus will be Device.X_RDK_WebConfig.RfcEnable, Device.X_RDK_WebConfig.ForceSync,
@@ -1012,7 +1153,8 @@ WEBCFG_STATUS regWebConfigDataModel()
 		{WEBCFG_SUPPORTED_DOCS_PARAM, RBUS_ELEMENT_TYPE_PROPERTY, {webcfgSupportedDocsGetHandler, webcfgSupportedDocsSetHandler, NULL, NULL, NULL, NULL}},
 		{WEBCFG_SUPPORTED_VERSION_PARAM, RBUS_ELEMENT_TYPE_PROPERTY, {webcfgSupportedVersionGetHandler, webcfgSupportedVersionSetHandler, NULL, NULL, NULL, NULL}},
 		{WEBCFG_UPSTREAM_EVENT, RBUS_ELEMENT_TYPE_EVENT, {NULL, NULL, NULL, NULL, eventSubHandler, NULL}},
-		{WEBCFG_UTIL_METHOD, RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, fetchCachedBlobHandler}}
+		{WEBCFG_UTIL_METHOD, RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, fetchCachedBlobHandler}},
+		{WEBCFG_SUBDOC_VERSION_METHOD, RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, appliedSubdocVersionHandler}}
 	};
 	ret = rbus_regDataElements(rbus_handle, NUM_WEBCFG_ELEMENTS, dataElements);
 	if(ret == RBUS_ERROR_SUCCESS)
