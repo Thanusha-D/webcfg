@@ -147,7 +147,7 @@ rbusError_t webcfgRfcSetHandler(rbusHandle_t handle, rbusProperty_t prop, rbusSe
     }
 
     rbusError_t retPsmSet = RBUS_ERROR_BUS_ERROR;
-    WebcfgDebug("Parameter name is %s \n", paramName);
+    WebcfgInfo("Parameter name is %s \n", paramName);
     rbusValueType_t type_t;
     rbusValue_t paramValue_t = rbusProperty_GetValue(prop);
     if(paramValue_t) {
@@ -159,6 +159,16 @@ rbusError_t webcfgRfcSetHandler(rbusHandle_t handle, rbusProperty_t prop, rbusSe
 
     if(strncmp(paramName, WEBCFG_RFC_PARAM, maxParamLen) == 0)
     {
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgRfcSetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgRfcSetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }	    
         if(type_t == RBUS_BOOLEAN) {
 	    bool paramval = rbusValue_GetBoolean(paramValue_t);
 	    WebcfgDebug("paramval is %d\n", paramval);
@@ -203,7 +213,7 @@ rbusError_t webcfgUrlSetHandler(rbusHandle_t handle, rbusProperty_t prop, rbusSe
     }
 
     rbusError_t retPsmSet = RBUS_ERROR_BUS_ERROR;
-    WebcfgDebug("Parameter name is %s \n", paramName);
+    WebcfgInfo("Parameter name is %s \n", paramName);
     rbusValueType_t type_t;
     rbusValue_t paramValue_t = rbusProperty_GetValue(prop);
     if(paramValue_t) {
@@ -215,6 +225,16 @@ rbusError_t webcfgUrlSetHandler(rbusHandle_t handle, rbusProperty_t prop, rbusSe
 
     if(strncmp(paramName, WEBCFG_URL_PARAM, maxParamLen) == 0) {
 
+	rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgUrlSetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgUrlSetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }    
 	if (!isRfcEnabled())
 	{
 		WebcfgError("RfcEnable is disabled so, %s SET failed\n",paramName);
@@ -258,10 +278,20 @@ rbusError_t webcfgDataSetHandler(rbusHandle_t handle, rbusProperty_t prop, rbusS
     char const* paramName = rbusProperty_GetName(prop);
 
     rbusError_t retPsmSet = RBUS_ERROR_BUS_ERROR;
-    WebcfgDebug("Parameter name is %s \n", paramName);
-   
+    WebcfgInfo("Parameter name is %s \n", paramName);
+
     if(strncmp(paramName, WEBCFG_DATA_PARAM, maxParamLen) == 0)
     {
+	rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgDataSetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgDataSetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }    
         WebcfgError("Data Set is not allowed\n");
         retPsmSet = RBUS_ERROR_ACCESS_NOT_ALLOWED;
         return retPsmSet;
@@ -276,10 +306,20 @@ rbusError_t webcfgSupportedDocsSetHandler(rbusHandle_t handle, rbusProperty_t pr
     char const* paramName = rbusProperty_GetName(prop);
 
     rbusError_t retPsmSet = RBUS_ERROR_BUS_ERROR;
-    WebcfgDebug("Parameter name is %s \n", paramName);
+    WebcfgInfo("Parameter name is %s \n", paramName);
  
     if(strncmp(paramName, WEBCFG_SUPPORTED_DOCS_PARAM, maxParamLen) == 0)
     {
+	rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgSupportedDocsSetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgSupportedDocsSetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }    
         WebcfgError("SupportedDocs Set is not allowed\n");
         retPsmSet = RBUS_ERROR_ACCESS_NOT_ALLOWED;
         return retPsmSet;
@@ -463,7 +503,7 @@ rbusError_t webcfgRfcGetHandler(rbusHandle_t handle, rbusProperty_t property, rb
 
     propertyName = rbusProperty_GetName(property);
     if(propertyName) {
-        WebcfgDebug("Property Name is %s \n", propertyName);
+        WebcfgInfo("Property Name is %s \n", propertyName);
     } else {
         WebcfgError("Unable to handle get request for property \n");
         return RBUS_ERROR_INVALID_INPUT;
@@ -474,6 +514,18 @@ rbusError_t webcfgRfcGetHandler(rbusHandle_t handle, rbusProperty_t property, rb
         rbusValue_t value;
         rbusValue_Init(&value);
 	char *tmpchar = NULL;
+        
+	rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgRfcGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgRfcGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }
+
 	retPsmGet = rbus_GetValueFromDB( paramRFCEnable, &tmpchar );
 	if (retPsmGet != RBUS_ERROR_SUCCESS){
 		WebcfgError("psm_get failed ret %d for parameter %s and value %s\n", retPsmGet, propertyName, tmpchar);
@@ -516,7 +568,7 @@ rbusError_t webcfgUrlGetHandler(rbusHandle_t handle, rbusProperty_t property, rb
 
     propertyName = rbusProperty_GetName(property);
     if(propertyName) {
-        WebcfgDebug("Property Name is %s \n", propertyName);
+        WebcfgInfo("Property Name is %s \n", propertyName);
     } else {
         WebcfgError("Unable to handle get request for property \n");
         return RBUS_ERROR_INVALID_INPUT;
@@ -526,6 +578,17 @@ rbusError_t webcfgUrlGetHandler(rbusHandle_t handle, rbusProperty_t property, rb
 
 	rbusValue_t value;
         rbusValue_Init(&value);
+
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgUrlGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgUrlGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }
 
 	if(!isRfcEnabled())
 	{
@@ -576,7 +639,7 @@ rbusError_t webcfgDataGetHandler(rbusHandle_t handle, rbusProperty_t property, r
 
     propertyName = rbusProperty_GetName(property);
     if(propertyName) {
-        WebcfgDebug("Property Name is %s \n", propertyName);
+        WebcfgInfo("Property Name is %s \n", propertyName);
     } else {
         WebcfgError("Unable to handle get request for property \n");
         return RBUS_ERROR_INVALID_INPUT;
@@ -585,6 +648,17 @@ rbusError_t webcfgDataGetHandler(rbusHandle_t handle, rbusProperty_t property, r
     {
         rbusValue_t value;
         rbusValue_Init(&value);
+
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgDataGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgDataGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }
 
 	if(!isRfcEnabled())
 	{
@@ -619,7 +693,7 @@ rbusError_t webcfgSupportedDocsGetHandler(rbusHandle_t handle, rbusProperty_t pr
 
     propertyName = rbusProperty_GetName(property);
     if(propertyName) {
-        WebcfgDebug("Property Name is %s \n", propertyName);
+        WebcfgInfo("Property Name is %s \n", propertyName);
     } else {
         WebcfgError("Unable to handle get request for property \n");
         return RBUS_ERROR_INVALID_INPUT;
@@ -629,6 +703,17 @@ rbusError_t webcfgSupportedDocsGetHandler(rbusHandle_t handle, rbusProperty_t pr
         rbusValue_t value;
         rbusValue_Init(&value);
 
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgSupportedDocsGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgSupportedDocsGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }
+	
 	if(!isRfcEnabled())
 	{
 		WebcfgError("RfcEnable is disabled so, %s Get from DB failed\n",propertyName);
@@ -664,7 +749,7 @@ rbusError_t webcfgSupportedVersionGetHandler(rbusHandle_t handle, rbusProperty_t
 
     propertyName = rbusProperty_GetName(property);
     if(propertyName) {
-        WebcfgDebug("Property Name is %s \n", propertyName);
+        WebcfgInfo("Property Name is %s \n", propertyName);
     } else {
         WebcfgError("Unable to handle get request for property \n");
         return RBUS_ERROR_INVALID_INPUT;
@@ -673,6 +758,18 @@ rbusError_t webcfgSupportedVersionGetHandler(rbusHandle_t handle, rbusProperty_t
     {
         rbusValue_t value;
         rbusValue_Init(&value);
+
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgSupportedVersionGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgSupportedVersionGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }
+	
 
 	if(!isRfcEnabled())
 	{
@@ -709,7 +806,7 @@ rbusError_t webcfgTelemetryGetHandler(rbusHandle_t handle, rbusProperty_t proper
 
     propertyName = rbusProperty_GetName(property);
     if(propertyName) {
-        WebcfgDebug("Property Name is %s \n", propertyName);
+        WebcfgInfo("Property Name is %s \n", propertyName);
     } else {
         WebcfgError("Unable to handle get request for property \n");
         return RBUS_ERROR_INVALID_INPUT;
@@ -719,6 +816,17 @@ rbusError_t webcfgTelemetryGetHandler(rbusHandle_t handle, rbusProperty_t proper
 
 	rbusValue_t value;
         rbusValue_Init(&value);
+
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgTelemetryGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgTelemetryGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }	
 
 	if(!isRfcEnabled())
 	{
@@ -769,12 +877,23 @@ rbusError_t webcfgFrGetHandler(rbusHandle_t handle, rbusProperty_t property, rbu
 
     propertyName = rbusProperty_GetName(property);
     if(propertyName) {
-        WebcfgDebug("Property Name is %s \n", propertyName);
+        WebcfgInfo("Property Name is %s \n", propertyName);
     } else {
         WebcfgError("Unable to handle get request for property \n");
         return RBUS_ERROR_INVALID_INPUT;
     }
     if(strncmp(propertyName, WEBCFG_FORCESYNC_PARAM, maxParamLen) == 0) {
+
+        rbusError_t ret = RBUS_ERROR_SUCCESS;
+        char traceParent[512] = {'\0'};
+        char traceState[512] = {'\0'};
+        ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
+        if(ret != RBUS_ERROR_SUCCESS) {
+                WebcfgError("webcfgFrGetHandler getTraceContext failed with errorcode - %d\n", ret);
+        }
+        else {
+                WebcfgInfo("webcfgFrGetHandler- traceParent : %s, traceState : %s\n", traceParent, traceState);
+        }
 
 	rbusValue_t value;
         rbusValue_Init(&value);
