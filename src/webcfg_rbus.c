@@ -137,6 +137,7 @@ rbusError_t getTraceContext(char *traceParent, char *traceState)
 	rbusError_t ret = RBUS_ERROR_SUCCESS;
 	ret = rbusHandle_GetTraceContextAsString(rbus_handle, traceParent, sizeof(traceParent), traceState, sizeof(traceState));
 	return ret;
+}
 
 /**
  * Data set handler for parameters owned by Webconfig
